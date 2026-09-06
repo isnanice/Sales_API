@@ -1,12 +1,17 @@
 import { supabase } from "../config/supabaseClient.js";
 
 export const ProductModel = {
-  async getAll() {
-    const { data, error } = await supabase
+  async getAll(categoryId) {
+    let query = supabase
       .from("products")
-      .select(
-        "id, sku, name, description, price, stock, category_id"
-      );
+      .select("id, sku, name, description, price, stock, category_id");
+
+    if (categoryId) {
+      query = query.eq("category_id", categoryId);
+    }
+
+    const { data, error } = await query;
+
     if (error) throw error;
     return data;
   },
@@ -22,6 +27,7 @@ export const ProductModel = {
       )
       .eq("id", id)
       .single();
+
     if (error) throw error;
     return data;
   },
@@ -31,6 +37,7 @@ export const ProductModel = {
       .from("products")
       .insert([payload])
       .select();
+
     if (error) throw error;
     return data[0];
   },
@@ -41,12 +48,17 @@ export const ProductModel = {
       .update(payload)
       .eq("id", id)
       .select();
+
     if (error) throw error;
     return data[0];
   },
 
   async remove(id) {
-    const { error } = await supabase.from("products").delete().eq("id", id);
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", id);
+
     if (error) throw error;
     return { message: "Product deleted successfully" };
   },

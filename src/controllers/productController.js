@@ -4,7 +4,9 @@ export const ProductController = {
 
   async getAll(req, res) {
     try {
-      const products = await ProductModel.getAll();
+      const { categoryId } = req.query;
+
+      const products = await ProductModel.getAll(categoryId);
 
       res.json({
         success: true,
@@ -44,7 +46,6 @@ export const ProductController = {
     try {
       const { price, stock } = req.body;
 
-      // Validasi harga
       if (typeof price !== "number" || price < 0) {
         return res.status(400).json({
           success: false,
@@ -53,7 +54,6 @@ export const ProductController = {
         });
       }
 
-      // Validasi stok
       if (typeof stock !== "number" || stock < 0) {
         return res.status(400).json({
           success: false,
@@ -83,7 +83,6 @@ export const ProductController = {
     try {
       const { price, stock } = req.body;
 
-      // Validasi harga jika dikirim
       if (price !== undefined) {
         if (typeof price !== "number" || price < 0) {
           return res.status(400).json({
@@ -94,7 +93,6 @@ export const ProductController = {
         }
       }
 
-      // Validasi stok jika dikirim
       if (stock !== undefined) {
         if (typeof stock !== "number" || stock < 0) {
           return res.status(400).json({
